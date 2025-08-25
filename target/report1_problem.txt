@@ -1,0 +1,59 @@
+MAP:
+
+(----) (----) (----) (R:SE, [-3,0]) (R:EW, [-2,0]) (R:EW, [-1,0]) (S:W, [0,0])
+(----) (----) (----) (R:NS, [-3,-1]) (----) (----) (----)
+(----) (----) (----) (R:NS, [-3,-2]) (----) (----) (----)
+(----) (R:SE, [-5,-3]) (R:EW, [-4,-3]) (R:NW, [-3,-3]) (----) (----) (----)
+(----) (R:NS, [-5,-4]) (----) (----) (----) (----) (----)
+(----) (R:NS, [-5,-5]) (----) (----) (----) (----) (----)
+(----) (R:NS, [-5,-6]) (----) (----) (----) (----) (----)
+(----) (R:NS, [-5,-7]) (----) (----) (----) (----) (----)
+(R:SE, [-6,-8]) (R:NW, [-5,-8]) (----) (----) (----) (----) (----)
+(R:NS, [-6,-9]) (----) (----) (----) (----) (----) (----)
+(R:NS, [-6,-10]) (----) (----) (----) (R:S, [-2,-10]) (----) (----)
+(R:NE, [-6,-11]) (R:EW, [-5,-11]) (R:EW, [-4,-11]) (R:SEW, [-3,-11]) (R:NSW, [-2,-11]) (----) (----)
+(----) (----) (----) (R:NSE, [-3,-12]) (R:NSW, [-2,-12]) (----) (----)
+(----) (----) (----) (R:NE, [-3,-13]) (R:NW, [-2,-13]) (----) (----)
+
+
+Swapped:
+SE -> NE
+NW -> SW
+SEW -> NEW
+N -> S
+
+
+Report of problems in each coordinate room:
+(S:W, [0,0]): Connects fine, facing west
+(R:EW, [-1,0]): Connects fine, facing west and east
+(R:EW, [-2,0]): Connects fine, facing west and east
+(R:SE, [-3,0]): Connects fine with east but the south side doesnt connect it anything, it seems the rooms started from opposite side that is north
+(R:NS, [-3,-1]): Should have connected fine if [SE] was [NE] instead
+(R:NS, [-3,-2]): Connects fine in south but not in north, the room ahead isnt placed right
+(R:NW, [-3,-3]): Should have connected fine if [NW] was [SW] instead, north side not connected
+(R:EW, [-4,-3]): Connects fine
+(R:SE, [-5,-3]): Should have connected fine if [SE] was [NE] instead, north side not connected
+(R:NS, [-5,-4]): Connects fine in north but not in south the room behind isnt placed right
+(R:NS, [-5,-5]): Connects fine
+(R:NS, [-5,-6]): Connects fine
+(R:NS, [-5,-7]): Connects fine in south but not in north, the room ahead isnt placed right
+(R:NW, [-5,-8]): Should have connected fine if [NW] was [SW] instead, north side not connected
+(R:SE, [-6,-8]): Should have connected fine if [SE] was [NE] instead, south side not connected
+(R:NS, [-6,-9]): Connects fine in north but not in south the room behind isnt placed right
+(R:S, [-2,-10]): Not connected, room is facing south, should've faced north to connect
+(R:NS, [-6,-10]):  Connects fine in south but not in north, the room ahead isnt placed right
+(R:NSW, [-2,-11]): Should have connected fine if [NE] was [SE] instead, north side not connected
+(R:SEW, [-3,-11]): EW connected but south isnt connected, would've been fine it was [NEW]
+(R:EW, [-4,-11]): Connects fine
+(R:EW, [-5,-11]): Connects fine
+(R:NE, [-6,-11]): NW connected but south isnt connected, this room seems fine but could be wrong
+(R:NSW, [-2,-12]):  WS connected but north isn't connected, room ahead isnt alright
+(R:NSE, [-3,-12]): Seems like surrounding rooms arent rotated properly to it. Only connects in East
+(R:NW, [-2,-13]): Should have connected fine if [NW] was [SW] instead, north side not connected
+(R:NE, [-3,-13]): Should have connected fine if [NE] was [SE] instead, north side not connected
+
+
+
+ 
+
+

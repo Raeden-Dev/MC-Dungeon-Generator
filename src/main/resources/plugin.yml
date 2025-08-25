@@ -1,0 +1,8 @@
+name: DungeonGeneratorPractice
+version: '${project.version}'
+main: com.raeden.dungeon_practice.DungeonGeneratorPractice
+api-version: '1.20'
+commands:
+  dungeon:
+    description: dungeon basic command
+    aliases: dg

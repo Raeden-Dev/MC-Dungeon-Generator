@@ -1,0 +1,333 @@
+package com.raeden.dungeon_practice.generators;
+
+import java.util.*;
+
+import com.raeden.dungeon_practice.DungeonGeneratorPractice;
+import com.raeden.dungeon_practice.utils.Coordinate;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+
+public class CreateDungeonLayout {
+    private final DungeonGeneratorPractice dungeonGeneratorPractice;
+
+    private final String dungeon_type;
+
+    private Random random = new Random();
+
+    private int total_dungeon_room;
+    private int total_boss_room;
+
+    private int current_boss_room = 0;
+    private int restart_chance;
+
+    private int dungeon_current_room = 0;
+    private int dungeon_current_x = 0;
+    private int dungeon_current_y = 0;
+    private int max_restart = 4;
+    private HashMap<String, Coordinate> directions = new HashMap<>();
+
+    private HashMap<Coordinate, String> room_info = new HashMap<>();
+
+    public CreateDungeonLayout (DungeonGeneratorPractice dungeonPractice, String dungeon_type) {
+        this.dungeon_type = dungeon_type;
+        this.dungeonGeneratorPractice = dungeonPractice;
+
+        directions.put("N", new Coordinate(0, 1));
+        directions.put("S", new Coordinate(0, -1));
+        directions.put("E", new Coordinate(1, 0));
+        directions.put("W", new Coordinate(-1, 0));
+        loadRoomInfo();
+    }
+
+    public void loadRoomInfo () {
+        FileConfiguration config = dungeonGeneratorPractice.getConfig();
+
+
+
+        if (dungeon_type == null) {
+            Bukkit.getLogger().severe("Problem getting dungeon name from config!");
+            return;
+        }
+
+        int minDungeonRooms = config.getInt("dungeon-types." + dungeon_type + ".dungeon-rooms.min");
+        int maxDungeonRooms = config.getInt("dungeon-types." + dungeon_type + ".dungeon-rooms.max");
+
+        this.total_dungeon_room = random.nextInt((maxDungeonRooms - minDungeonRooms) + 1) + minDungeonRooms;
+
+        int minBossRooms = config.getInt("dungeon-types." + dungeon_type + ".dungeon-rooms.boss-rooms-min");
+        int maxBossRooms = config.getInt("dungeon-types." + dungeon_type + ".dungeon-rooms.boss-rooms-max");
+
+        this.total_boss_room = random.nextInt((maxBossRooms - minBossRooms) + 1) + minBossRooms;
+
+
+    }
+    public void tellInfo() {
+        System.out.println("_______________________ DUNGEON INFO _______________________");
+        System.out.println("TOTAL BOSS ROOM: " + total_boss_room);
+        System.out.println("TOTAL ROOM: " + total_dungeon_room);
+        System.out.println("DUNGEON TYPE: " + dungeon_type);
+        System.out.println("Room Hashmap: \n" + room_info);
+        System.out.println("____________________________________________________________");
+
+    }
+
+    public List<String> getAvailableDirections() {
+        // Create a list to hold available directions
+        List<String> availableDirections = new ArrayList<>();
+
+        // Iterate over the directions map
+        for (Map.Entry<String, Coordinate> entry : directions.entrySet()) {
+            String direction = entry.getKey();
+            Coordinate offset = entry.getValue();
+
+            // Calculate the new coordinates
+            int newX = dungeon_current_x + offset.x;
+            int newY = dungeon_current_y + offset.y;
+            Coordinate newCoord = new Coordinate(newX, newY);
+
+            // Check if the new coordinates are not in the dungeon_map
+            if (!room_info.containsKey(newCoord)) {
+                availableDirections.add(direction);
+            }
+        }
+
+        return availableDirections;
+    }
+
+
+    public String getOppositeDirection(String direction) {
+        HashMap<String, String> oppositeDirections = new HashMap<>();
+        oppositeDirections.put("N", "S");
+        oppositeDirections.put("S", "N");
+        oppositeDirections.put("E", "W");
+        oppositeDirections.put("W", "E");
+        return oppositeDirections.get(direction);
+    }
+
+    public boolean restart_check() {
+        Random random = new Random();
+        int randomRestart = random.nextInt(100) + 1;
+        return randomRestart <= restart_chance;
+    }
+
+    public void add_room(int x, int y, String room_type) {
+        Coordinate coord = new Coordinate(x, y);
+
+        if (room_info.containsKey(coord)) {
+            return; // Room already exists, exit the method
+        }
+
+        dungeon_current_room += 1;
+
+        // Start with the room type as the base of the connection string
+        StringBuilder connections = new StringBuilder(room_type + "_"); // Use underscore to denote connections
+
+        StringBuilder connectionDirections = new StringBuilder();
+
+        // Check neighboring rooms for connections and update their connection strings
+        for (Map.Entry<String, Coordinate> entry : directions.entrySet()) {
+            String direction = entry.getKey();
+            Coordinate offset = entry.getValue();
+            Coordinate neighborCoord = new Coordinate(x + offset.x, y + offset.y);
+
+            // Check if neighboring room exists
+            if (room_info.containsKey(neighborCoord)) {
+                connectionDirections.append(direction); // Add direction to the list
+
+                // If the neighboring room is updated, append the opposite direction
+                String oppositeDirection = getOppositeDirection(direction);
+                String existingConnections = room_info.get(neighborCoord);
+
+                String neighbourCordUpdate = existingConnections + oppositeDirection;
+
+                String sortedNeighbourCord = sortStringInOrder(neighbourCordUpdate);
+
+                if (neighborCoord.x == 0 && neighborCoord.y == 0) {
+                    room_info.put(neighborCoord, "start_" + sortedNeighbourCord);
+                } else {
+                    room_info.put(neighborCoord, room_type + "_" + sortedNeighbourCord);
+                }
+
+            }
+        }
+
+        connections.append(sortStringInOrder(connectionDirections.toString()));
+
+        // Add the room to the room_info HashMap with the connection string
+        room_info.put(coord, connections.toString());
+    }
+
+    // Method to sort a string based on a specific order
+    private String sortStringInOrder(String input) {
+        StringBuilder newString = new StringBuilder();
+
+        if(input.contains("N")) {
+            newString.append("N");
+        }
+        if(input.contains("S")) {
+            newString.append("S");
+        }
+        if(input.contains("E")) {
+            newString.append("E");
+        }
+        if(input.contains("W")) {
+            newString.append("W");
+        }
+
+        return new String(newString);
+    }
+
+    public void place_boss_room() {
+        int boss_room_threshold = 99 - (total_boss_room - 1) * 10;
+        if (current_boss_room <= total_boss_room && dungeon_current_room >= (total_dungeon_room * boss_room_threshold) / 100) {
+            Bukkit.getLogger().info("Boss room was placed!");
+            List<String> available_directions = getAvailableDirections();
+
+            if(available_directions!= null) {
+                String random_direction = available_directions.get(random.nextInt(available_directions.size()));
+                Coordinate offset = directions.get(random_direction);
+
+                // Calculate new coordinates
+                int new_x = dungeon_current_x + offset.x;
+                int new_y = dungeon_current_y + offset.y;
+
+                add_room(new_x, new_y, "boss");
+                current_boss_room += 1;
+            }  else {
+                Bukkit.getLogger().info("No available directions to place the boss room.");
+            }
+        } else {
+            Bukkit.getLogger().info("Boss room place condition wasn't met.");
+        }
+    }
+
+    public void generateDungeon() {
+        dungeon_current_x = 0;
+        dungeon_current_y = 0;
+        dungeon_current_room = 0;
+        max_restart = 4;
+
+        // Start at 0,0 coord
+        add_room(dungeon_current_x, dungeon_current_y, "start");
+
+        while (dungeon_current_room < total_dungeon_room) {
+            if (restart_check() && max_restart > 0) {
+                max_restart -= 1;
+                dungeon_current_x = 0;
+                dungeon_current_y = 0;
+                dungeon_current_room = 0;
+                room_info.clear();
+                add_room(dungeon_current_x, dungeon_current_y, "start");
+                continue;
+            }
+
+            List<String> available_directions = getAvailableDirections();
+            if (available_directions == null) {
+                max_restart -= 1;
+                if (max_restart <= 0) {
+                    return;
+                }
+                dungeon_current_x = 0;
+                dungeon_current_y = 0;
+                dungeon_current_room = 0;
+                room_info.clear();
+                add_room(dungeon_current_x, dungeon_current_y, "start");
+                continue;
+
+            }
+
+            String random_direction = available_directions.get(random.nextInt(available_directions.size()));
+            Coordinate offset = directions.get(random_direction);
+
+            // Calculate new coordinates
+            int new_x = dungeon_current_x + offset.x;
+            int new_y = dungeon_current_y + offset.y;
+
+            add_room(new_x, new_y, "room");
+            dungeon_current_x = new_x;  // Assign new_x to dungeon_current_x
+            dungeon_current_y = new_y;
+
+            place_boss_room();
+
+        }
+        tellInfo();
+
+
+        FileConfiguration config = dungeonGeneratorPractice.getConfig();
+        Boolean displayMap = config.getBoolean("display-dungeon-map");
+
+        if(displayMap) {
+            printDungeonMap();
+        } else {
+            Bukkit.getLogger().info("Dungeon map is not being printed in console.");
+        }
+
+
+    }
+
+    public void printDungeonMap() {
+        if (room_info.isEmpty()) { // Check if any rooms were placed
+            System.out.println("No rooms placed in the dungeon.");
+            return;
+        }
+
+        // Find min and max coordinates
+        int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
+
+        for (Coordinate coord : room_info.keySet()) {
+            if (coord.x < minX) minX = coord.x;
+            if (coord.x > maxX) maxX = coord.x;
+            if (coord.y < minY) minY = coord.y;
+            if (coord.y > maxY) maxY = coord.y;
+        }
+
+        // Print the dungeon layout
+        for (int y = maxY; y >= minY; y--) {
+            StringBuilder row = new StringBuilder();
+            for (int x = minX; x <= maxX; x++) {
+                Coordinate currentCoord = new Coordinate(x, y);
+
+                if (room_info.containsKey(currentCoord)) {
+                    String room = room_info.get(currentCoord);
+                    String connections = getRoomConnections(currentCoord); // Assume this method returns connection directions as a string
+
+                    char roomType;
+                    if (room.startsWith("start")) {
+                        roomType = 'S'; // Starting room
+                    } else if (room.startsWith("boss")) {
+                        roomType = 'B'; // Boss room
+                    } else if (room.startsWith("isolated")) {
+                        roomType = 'I'; // Isolated room
+                        connections = connections.substring(0, 1); // Only show one connection for isolated rooms
+                    } else {
+                        roomType = 'R'; // Normal room
+                    }
+
+                    row.append("(").append(roomType).append(":").append(connections).append(") ");
+                } else {
+                    row.append("(----) "); // Empty space
+                }
+            }
+            System.out.println(row.toString().trim());
+        }
+    }
+
+    private String getRoomConnections(Coordinate coord) {
+        // Extract connection information for the room at the given coordinate
+        // You may need to adapt this part to match your existing room structure
+        String connections = ""; // Initialize an empty string for connections
+
+        // Example logic to determine connections; adapt as needed
+        // You may need to check the adjacent rooms to determine the connections
+        if (room_info.containsKey(new Coordinate(coord.x, coord.y + 1))) connections += "N"; // North
+        if (room_info.containsKey(new Coordinate(coord.x, coord.y - 1))) connections += "S"; // South
+        if (room_info.containsKey(new Coordinate(coord.x + 1, coord.y))) connections += "E"; // East
+        if (room_info.containsKey(new Coordinate(coord.x - 1, coord.y))) connections += "W"; // West
+
+        return connections;
+    }
+
+
+}
+

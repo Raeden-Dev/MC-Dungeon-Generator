@@ -1,0 +1,83 @@
+# Settings
+# Display information in console or not
+display-loaded-schematics: false
+display-dungeon-map: true
+display-dungeon-info: true
+
+# Database
+database-info:
+  HOST: localhost
+  PORT: 3306
+  DATABASE: dungeon_schematics
+  USERNAME: root
+  # If there is no pass leave as "no-pass"
+  PASSWORD: no-pass
+
+# Location player is teleported to if a dungeon is deleted while they're in
+default-teleport-location:
+  world: world
+  x: 0
+  y: 150
+  z: 0
+  yaw: 180
+  pitch: 0
+
+dungeon-types:
+  hard-dungeon:
+    dungeon-rooms:
+      min: 20
+      max: 35
+      boss-rooms-min: 0
+      boss-rooms-max: 1
+      # Restart chance determines how often the dungeon starts generating again from start
+      restart-chance: 0.1
+  easy-dungeon:
+    max-players: 2
+    # Minimum and Maximum Enemy Level Scaling
+    enemy-lvl:
+      min: 0
+      max: 20
+    # Dungeon room info is needed and directly used to create the layout
+    dungeon-rooms:
+      min: 10
+      max: 15
+      boss-rooms-min: 0
+      boss-rooms-max: 1
+      # Restart chance determines how often the dungeon starts generating again from start
+      restart-chance: 0.1
+    dungeon-time:
+      min: 0
+      max: 0
+      # Possible Objectives in a dungeon
+      dungeon-objectives:
+        kill:
+        mine:
+        gather:
+        survival:
+        completion:
+      # Status Effects applied to player upon entering dungeon or modifiers for enemies / loot scaling etc.
+      dungeon-modifiers:
+        min: 0
+        max: 0
+        modifiers:
+          - "Poisonous"
+          - "Weakness"
+      # Number of trap rooms that can be present in the dungeon at a time.
+      dungeon-traps:
+        min: 2
+        max: 3
+      # Minimum and Maximum boss rooms present in a dungeon
+      boss-presence:
+        min: 1
+        max: 2
+        bosses:
+          - "Zombie 1"
+      # Number of loot players can take when they complete dungeon
+      max-takeaway-loot: 10
+      # Resources that will be found in the dungeon
+      dungeon-resources:
+        blocks:
+        items:
+      # Dungeon loot pool
+      dungeon-loot-pool:
+        items:

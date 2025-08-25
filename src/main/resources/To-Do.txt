@@ -1,0 +1,39 @@
+> To-Do:
+- If a dungeon was not deleted show in delete options in tablist completer
+- IMPORTANT: Add boss room for dungeons and isolated rooms
+
+
+
+
+- Dungeon History
+    - Time created
+    - Player join log
+    - Other info
+        - Type, difficulty etc.
+        - Available players in dungeon
+        - Players joined the dungeon
+- Dungeon checkpoints
+- Dungeon functional rooms
+- Dungeon Modifiers
+- Dungeon Interactions w/ blocks
+- Dungeon Mob Spawning with MythicMobs
+- Finalize dungeon generation (1.0)
+- Performance Testing part-1 (after finalizing dungeon generation 1.0)
+
+
+
+> Problems:
+- Log Dungeon deletion in console
+- Need a method to check if room is only one directional and has other direction
+
+
+> Completed:
+- Improve Command: /dungeon create [dungeon_name] [size] [type]
+  ? If type rooms are present in schematic folder
+- Test schematic placement.
+  ? Places schematic in the chunk where player is at mentioned Y level
+- Test Dungeon Generation
+
+
+> Not needed:
+- Command: /dungeon schematic load [schematic name] [Y level]
