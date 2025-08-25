@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -42,7 +43,7 @@ public class DungeonManager {
         FileConfiguration config = plugin.getConfig();
 
         String worldName = config.getString("default-teleport-location.world");
-        World world = Bukkit.getWorld(worldName);
+        World world = Bukkit.getWorld(Objects.requireNonNull(worldName));
         if (world == null) {
             getLogger().warning("World '" + worldName + "' not found!");
             return null;
@@ -103,7 +104,7 @@ public class DungeonManager {
                             onlinePlayer.teleport(config_teleport_location);
                             onlinePlayer.sendMessage(ChatColor.RED + "The dungeon " + dungeonName + " has been deleted. You have been teleported out.");
                         } else {
-                            onlinePlayer.teleport(default_teleportWorld.getSpawnLocation());
+                            onlinePlayer.teleport(Objects.requireNonNull(default_teleportWorld).getSpawnLocation());
                             onlinePlayer.sendMessage(ChatColor.RED + "Error: Config Teleport location not found. Teleporting to default world spawn.");
                         }
                     }

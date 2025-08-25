@@ -11,6 +11,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class DungeonGeneratorPractice extends JavaPlugin {
 
@@ -18,11 +19,11 @@ public final class DungeonGeneratorPractice extends JavaPlugin {
 
     private DungeonManager dungeonManager;
     private DatabaseFetcher database;
+
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
-
         reloadConfig();
 
         dungeonManager = new DungeonManager(this);
@@ -38,8 +39,8 @@ public final class DungeonGeneratorPractice extends JavaPlugin {
         SchematicManager schematicManager = new SchematicManager(this, dungeonSchematicFolder, getLogger(), database);
 
         // Plugin startup logic
-        getCommand("dungeon").setExecutor(new DungeonCommands(this, dungeonManager, database, schematicManager));
-        getCommand("dungeon").setTabCompleter(new DungeonTablist(this));
+        Objects.requireNonNull(getCommand("dungeon")).setExecutor(new DungeonCommands(this, dungeonManager, database, schematicManager));
+        Objects.requireNonNull(getCommand("dungeon")).setTabCompleter(new DungeonTablist(this));
     }
 
     @Override
@@ -47,4 +48,7 @@ public final class DungeonGeneratorPractice extends JavaPlugin {
         // Plugin shutdown logic
         database.disconnect();
     }
+
+    public DungeonManager getDungeonManager() { return dungeonManager;}
+    public DatabaseFetcher getDatabase() { return database;}
 }

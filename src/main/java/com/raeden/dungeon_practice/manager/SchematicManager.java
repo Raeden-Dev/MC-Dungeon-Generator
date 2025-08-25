@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /*
@@ -43,7 +44,7 @@ public class SchematicManager {
             logger.warning("Dungeon base folder not found: " + dungeonSchematicFolder.getAbsolutePath());
             return;
         }
-        for (File themeFolder : dungeonSchematicFolder.listFiles()) {
+        for (File themeFolder : Objects.requireNonNull(dungeonSchematicFolder.listFiles())) {
             if (themeFolder.isDirectory()) {
                 loadSchematicsFromTheme(themeFolder);
             }
@@ -52,7 +53,7 @@ public class SchematicManager {
 
     // Load Theme Schematics
     private void loadSchematicsFromTheme(File themeFolder) {
-        for (File schematicFile : themeFolder.listFiles()) {
+        for (File schematicFile : Objects.requireNonNull(themeFolder.listFiles())) {
             if (schematicFile.isFile() && (schematicFile.getName().endsWith(".schem") || schematicFile.getName().endsWith(".schematic"))) {
                 String schematicName = schematicFile.getName();
                 // Extract schematic Info
@@ -71,7 +72,7 @@ public class SchematicManager {
                         } else {
                             // Log that the schematic already exists
                             FileConfiguration config = dungeonPractice.getConfig();
-                            Boolean display_check = config.getBoolean("display-loaded-schematics");
+                            boolean display_check = config.getBoolean("display-loaded-schematics");
                             if (display_check) {
                                 logger.info("Schematic already exists in the database: " + schematicName);
                             }
